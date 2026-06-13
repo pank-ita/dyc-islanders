@@ -98,9 +98,54 @@
       nav a { padding: 0.65rem 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
       nav a:last-child { border-bottom: none; }
     }
+
+    /* PASSWORD GATE */
+    #pw-gate { position: fixed; inset: 0; background: #0a1f44; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    #pw-gate.hidden { display: none; }
+    .pw-box { background: white; border-radius: 12px; padding: 2.5rem 2rem; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+    .pw-box img { height: 60px; margin-bottom: 1rem; filter: none; }
+    .pw-box h2 { font-size: 1.3rem; font-weight: 800; color: #0a1f44; margin-bottom: 0.3rem; }
+    .pw-box p { font-size: 0.85rem; color: #6b7280; margin-bottom: 1.4rem; }
+    .pw-box input { width: 100%; padding: 0.7rem 1rem; border: 2px solid #dde3f0; border-radius: 7px; font-size: 1rem; text-align: center; outline: none; margin-bottom: 0.8rem; letter-spacing: 2px; }
+    .pw-box input:focus { border-color: #0a1f44; }
+    .pw-box button { width: 100%; background: #c8102e; color: white; border: none; padding: 0.7rem; border-radius: 7px; font-size: 0.95rem; font-weight: 700; cursor: pointer; }
+    .pw-box button:hover { background: #a50d26; }
+    .pw-error { color: #c8102e; font-size: 0.82rem; margin-top: 0.5rem; min-height: 1.1rem; }
   </style>
 </head>
 <body>
+
+<div id="pw-gate">
+  <div class="pw-box">
+    <img src="dyc-logo.svg" alt="DYC Islanders" style="filter: none;" />
+    <h2>DYC Islanders</h2>
+    <p>Detroit Yacht Club &middot; Summer 2026</p>
+    <input type="password" id="pw-input" placeholder="Enter password" />
+    <button onclick="checkPw()">Enter Site</button>
+    <div class="pw-error" id="pw-error"></div>
+  </div>
+</div>
+<script>
+  (function() {
+    if (sessionStorage.getItem('dyc-auth') === 'ok') {
+      document.getElementById('pw-gate').classList.add('hidden');
+    }
+    document.getElementById('pw-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') checkPw();
+    });
+  })();
+  function checkPw() {
+    var val = document.getElementById('pw-input').value;
+    if (val === 'island26') {
+      sessionStorage.setItem('dyc-auth', 'ok');
+      document.getElementById('pw-gate').classList.add('hidden');
+    } else {
+      document.getElementById('pw-error').textContent = 'Incorrect password. Try again.';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+</script>
 
 <header>
   <div class="header-inner">
