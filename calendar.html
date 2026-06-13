@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DYC Islanders · Calendar</title>
+  <style>
+    :root { --navy: #0a1f44; --navy-light: #122b5e; --red: #c8102e; --red-hover: #a50d26; --white: #ffffff; --off-white: #f4f6fb; --gray: #6b7280; --border: #dde3f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--off-white); color: #1a1a2e; }
+
+    header { background: var(--navy); color: var(--white); padding: 0 2rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .header-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--white); }
+    .logo img { height: 48px; width: auto; filter: brightness(0) invert(1); }
+    .logo-text h1 { font-size: 1.2rem; font-weight: 800; line-height: 1.1; }
+    .logo-text span { display: block; font-size: 0.67rem; font-weight: 400; opacity: 0.65; letter-spacing: 1.5px; text-transform: uppercase; }
+    nav { display: flex; align-items: center; gap: 0.15rem; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.87rem; font-weight: 500; padding: 0.4rem 0.85rem; border-radius: 5px; transition: all 0.2s; white-space: nowrap; }
+    nav a:hover, nav a.active { color: var(--white); background: rgba(255,255,255,0.12); }
+
+    .page-header { background: var(--navy); color: var(--white); padding: 2.5rem 2rem 2rem; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-header p { font-size: 0.88rem; opacity: 0.65; }
+
+    main { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem; display: grid; grid-template-columns: 1fr 310px; gap: 2rem; }
+    @media (max-width: 820px) { main { grid-template-columns: 1fr; } nav { display: none; } }
+
+    .section-title { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--red); }
+    .card { background: var(--white); border-radius: 10px; padding: 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1.5rem; }
+
+    /* TABS */
+    .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 1.2rem; }
+    .tab-btn { background: none; border: none; padding: 0.55rem 1.1rem; font-size: 0.87rem; font-weight: 600; color: var(--gray); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+    .tab-btn.active { color: var(--navy); border-bottom-color: var(--red); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* EVENT TABLE */
+    .event-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .event-table th { text-align: left; padding: 0.5rem 0.65rem; background: var(--off-white); color: var(--navy); font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .event-table td { padding: 0.6rem 0.65rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .event-table tr:last-child td { border-bottom: none; }
+    .event-table tr:hover td { background: #fafbff; }
+
+    .etype { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; white-space: nowrap; }
+    .type-meet   { background: #fee2e2; color: #991b1b; }
+    .type-champs { background: #ede9fe; color: #5b21b6; }
+    .type-noprac { background: #f3f4f6; color: #6b7280; }
+    .type-event  { background: #dbeafe; color: #1e40af; }
+    .type-prac   { background: #d1fae5; color: #065f46; }
+    .type-hol    { background: #fef3c7; color: #92400e; }
+    .date-col { white-space: nowrap; color: var(--gray); font-size: 0.82rem; min-width: 90px; }
+    .past-row td { opacity: 0.45; }
+
+    /* PRACTICE TABLE */
+    .prac-block { margin-bottom: 1.5rem; }
+    .prac-block:last-child { margin-bottom: 0; }
+    .prac-block h4 { font-size: 0.9rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    .prac-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; }
+    .prac-table th { background: var(--navy); color: var(--white); padding: 0.45rem 0.7rem; text-align: left; font-size: 0.77rem; font-weight: 600; }
+    .prac-table td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border); }
+    .prac-table tr:last-child td { border-bottom: none; }
+    .prac-table tr:nth-child(even) td { background: var(--off-white); }
+    .note { font-size: 0.78rem; color: var(--gray); font-style: italic; margin-top: 0.5rem; }
+
+    /* SIDEBAR */
+    .key-box { background: var(--white); border-radius: 10px; padding: 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1.4rem; }
+    .key-box h3 { font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; }
+    .key-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.45rem; font-size: 0.82rem; }
+    .key-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+    .upcoming-box { background: var(--white); border-radius: 10px; padding: 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+    .upcoming-box h3 { font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; }
+    .up-item { display: flex; gap: 0.75rem; margin-bottom: 0.8rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); font-size: 0.83rem; }
+    .up-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+    .up-date { min-width: 44px; background: var(--navy); color: var(--white); border-radius: 6px; text-align: center; padding: 4px 6px; }
+    .up-date .m { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; opacity: 0.75; }
+    .up-date .d { font-size: 1.3rem; font-weight: 800; line-height: 1; }
+    .up-info strong { display: block; color: var(--navy); font-size: 0.84rem; }
+    .up-info span { font-size: 0.78rem; color: var(--gray); }
+
+    footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 1.5rem; font-size: 0.8rem; margin-top: 1rem; line-height: 1.9; }
+    footer strong { color: var(--white); }
+    footer a { color: rgba(255,255,255,0.65); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <img src="dyc-logo.svg" alt="DYC Islanders" />
+      <div class="logo-text">
+        <h1>DYC Islanders</h1>
+        <span>Detroit Yacht Club · Summer 2026</span>
+      </div>
+    </a>
+    <nav>
+      <a href="index.html">Announcements</a>
+      <a href="calendar.html" class="active">Calendar</a>
+      <a href="learn-to-swim.html">Learn to Swim</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="finals-2027.html">MICSA Finals</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h2>Schedule</h2>
+    <p>Summer 2026 · All schedules subject to change · Head Coach: Scott MacDonald</p>
+  </div>
+</div>
+
+<main>
+  <div>
+    <div class="card" style="padding: 1rem 1.4rem;">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('meets', this)">Meets &amp; Events</button>
+        <button class="tab-btn" onclick="showTab('practice', this)">Practice Schedule</button>
+      </div>
+
+      <!-- MEETS & EVENTS -->
+      <div id="tab-meets" class="tab-panel active">
+        <table class="event-table">
+          <thead>
+            <tr><th>Date</th><th>Event</th><th>Type</th></tr>
+          </thead>
+          <tbody>
+            <tr class="past-row">
+              <td class="date-col">Fri Jun 12</td>
+              <td>Pontchartrain Relays @ DGC &mdash; Ages 13+ &middot; PM</td>
+              <td><span class="etype type-meet">Relay Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Mon Jun 15</td>
+              <td>Morning Practices Begin &mdash; Outdoor AM schedule</td>
+              <td><span class="etype type-prac">Schedule Change</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Tue Jun 16</td>
+              <td>Swim Meet @ Detroit Golf Club &mdash; Arrive by 4:15pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Thu Jun 18</td>
+              <td>Swim Meet @ DYC vs. Grosse Ile &mdash; Arrive by 3:45pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Fri Jun 19</td>
+              <td>Juneteenth Holiday &mdash; AM Practice continues</td>
+              <td><span class="etype type-hol">Holiday</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Mon Jun 22</td>
+              <td>No Practice &mdash; Detroit Fireworks Day</td>
+              <td><span class="etype type-noprac">No Practice</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Thu Jun 25</td>
+              <td>Swim Meet @ Oakland Hills &mdash; Arrive by 4:15pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Fri Jun 26</td>
+              <td>Firecracker Meet @ Plum Hollow &mdash; Ages 11–12 only &middot; Team Pictures (tentative)</td>
+              <td><span class="etype type-meet">Invitational</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Sat Jun 27</td>
+              <td>Venetian Festival Fundraiser &mdash; 12:30–4:30pm</td>
+              <td><span class="etype type-event">Fundraiser</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Tue Jun 30</td>
+              <td>Swim Meet @ DYC vs. Plum Hollow &mdash; Arrive by 3:45pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Sat Jul 4</td>
+              <td>Independence Day &mdash; No Practice</td>
+              <td><span class="etype type-hol">Holiday</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Tue Jul 7</td>
+              <td>Swim Meet @ Western &mdash; Arrive by 4:15pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Tue Jul 14</td>
+              <td>Swim Meet @ DYC vs. Dearborn &mdash; Arrive by 3:45pm</td>
+              <td><span class="etype type-meet">Dual Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Fri Jul 17</td>
+              <td>DYC Mini Meet &mdash; Ages 10 &amp; Under &middot; 8:00am &middot; 3 races + T-shirt + Breakfast &middot; No regular practice</td>
+              <td><span class="etype type-meet">Mini Meet</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Sat Jul 18</td>
+              <td>No Practice &mdash; Detroit Marathon Day &middot; Last day of AM season</td>
+              <td><span class="etype type-noprac">No Practice</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Mon–Fri Jul 20–24</td>
+              <td>Championship Schedule in Effect</td>
+              <td><span class="etype type-champs">Championships</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Fri Jul 24</td>
+              <td>Championships &mdash; 10 &amp; Under Swim Meet</td>
+              <td><span class="etype type-champs">Championships</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Sat Jul 25</td>
+              <td>Championships &mdash; Ages 11+ Swim Meet</td>
+              <td><span class="etype type-champs">Championships</span></td>
+            </tr>
+            <tr>
+              <td class="date-col">Sun Jul 26</td>
+              <td>Championship Finals &amp; Parade &mdash; Top 14 qualifiers</td>
+              <td><span class="etype type-champs">Championships</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note" style="margin-top:0.75rem;">Past events shown faded.</p>
+      </div>
+
+      <!-- PRACTICE SCHEDULE -->
+      <div id="tab-practice" class="tab-panel">
+        <p style="font-size:0.84rem;color:var(--gray);margin-bottom:1.2rem;">Outdoor swimming depends on pool and air temperature. All schedules subject to change.</p>
+
+        <div class="prac-block">
+          <h4>Evening Practices &mdash; May 18 through June 13 (Indoors)</h4>
+          <table class="prac-table">
+            <thead><tr><th>Age Group</th><th>Dryland</th><th>Swim</th></tr></thead>
+            <tbody>
+              <tr><td>8 &amp; Under</td><td>—</td><td>4:30 – 5:30pm</td></tr>
+              <tr><td>Ages 9–12</td><td>5:00 – 5:30pm</td><td>5:30 – 6:30pm</td></tr>
+              <tr><td>Ages 13+</td><td>4:30 – 5:00pm</td><td>5:00 – 6:30pm</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prac-block">
+          <h4>Morning Practices &mdash; June 15 through July 18 (Outdoors)</h4>
+          <table class="prac-table">
+            <thead><tr><th>Age Group</th><th>Dryland</th><th>Swim</th></tr></thead>
+            <tbody>
+              <tr><td>Ages 13+</td><td>8:00 – 8:30am</td><td>8:30 – 10:00am</td></tr>
+              <tr><td>Ages 9–12</td><td>9:30 – 10:00am</td><td>10:00 – 11:00am</td></tr>
+              <tr><td>8 &amp; Under</td><td>—</td><td>10:45 – 11:30am</td></tr>
+              <tr><td>Learn to Swim</td><td>—</td><td>11:30am – 12:00pm</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prac-block">
+          <h4>Saturday Practices &mdash; All Season</h4>
+          <table class="prac-table">
+            <thead><tr><th>Age Group</th><th>Dryland</th><th>Swim</th></tr></thead>
+            <tbody>
+              <tr><td>Ages 9+</td><td>9:00 – 9:30am</td><td>9:30 – 11:00am</td></tr>
+              <tr><td>8 &amp; Under</td><td>—</td><td>10:00 – 11:00am (second hour only)</td></tr>
+            </tbody>
+          </table>
+          <p class="note">Head Coach: Scott MacDonald &middot; (586) 850-3197 &middot; wsmacdonald79@gmail.com</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div>
+    <div class="key-box">
+      <h3>Event Key</h3>
+      <div class="key-row"><div class="key-dot" style="background:#fee2e2;"></div> Dual Meet / Invitational</div>
+      <div class="key-row"><div class="key-dot" style="background:#ede9fe;"></div> Championships</div>
+      <div class="key-row"><div class="key-dot" style="background:#dbeafe;"></div> Team Event / Fundraiser</div>
+      <div class="key-row"><div class="key-dot" style="background:#d1fae5;"></div> Schedule Change</div>
+      <div class="key-row"><div class="key-dot" style="background:#fef3c7;"></div> Holiday</div>
+      <div class="key-row"><div class="key-dot" style="background:#f3f4f6;"></div> No Practice</div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <strong>DYC Islanders · Detroit Yacht Club · Summer 2026</strong><br>
+  Head Coach: Scott MacDonald · <a href="tel:5868503197">(586) 850-3197</a> · <a href="mailto:wsmacdonald79@gmail.com">wsmacdonald79@gmail.com</a><br>
+  Team Chairs: Leslie Lott · Ryan Sullivan<br><br>
+  All schedules subject to change.
+</footer>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

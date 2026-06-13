@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DYC Islanders · MICSA Finals</title>
+  <style>
+    :root { --navy: #0a1f44; --navy-light: #122b5e; --red: #c8102e; --red-hover: #a50d26; --white: #ffffff; --off-white: #f4f6fb; --gray: #6b7280; --border: #dde3f0; --gold: #b8953a; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--off-white); color: #1a1a2e; }
+
+    header { background: var(--navy); color: var(--white); padding: 0 2rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .header-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--white); }
+    .logo img { height: 48px; width: auto; filter: brightness(0) invert(1); }
+    .logo-text h1 { font-size: 1.2rem; font-weight: 800; line-height: 1.1; }
+    .logo-text span { display: block; font-size: 0.67rem; font-weight: 400; opacity: 0.65; letter-spacing: 1.5px; text-transform: uppercase; }
+    nav { display: flex; align-items: center; gap: 0.15rem; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.87rem; font-weight: 500; padding: 0.4rem 0.85rem; border-radius: 5px; transition: all 0.2s; white-space: nowrap; }
+    nav a:hover, nav a.active { color: var(--white); background: rgba(255,255,255,0.12); }
+
+    .page-header { background: linear-gradient(135deg, #0a1f44 0%, #1a3a7a 50%, #0a2a5e 100%); color: var(--white); padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; }
+    .page-header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 40px; background: var(--off-white); clip-path: ellipse(55% 100% at 50% 100%); }
+    .wave { position: absolute; inset: 0; opacity: 0.05; background-image: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(255,255,255,0.6) 28px, rgba(255,255,255,0.6) 30px); }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; position: relative; }
+    .page-header h2 { font-size: 2rem; font-weight: 900; margin-bottom: 0.4rem; }
+    .page-header p { font-size: 0.9rem; opacity: 0.7; }
+
+    main { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    @media (max-width: 820px) { nav { display: none; } }
+
+    /* SECTION DIVIDERS */
+    .finals-section { margin-bottom: 2.5rem; }
+    .finals-section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+    .finals-section-header .badge { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+    .badge-gocc { background: #dbeafe; color: #1e40af; }
+    .badge-dyc  { background: #d1fae5; color: #065f46; }
+    .section-rule { flex: 1; height: 3px; border-radius: 2px; }
+    .rule-blue { background: #3b82f6; }
+    .rule-green { background: #10b981; }
+    .finals-section-header h2 { font-size: 1.3rem; font-weight: 800; color: var(--navy); white-space: nowrap; }
+
+    /* GRID LAYOUTS */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.2rem; }
+    @media (max-width: 700px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+    .card { background: var(--white); border-radius: 10px; padding: 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+
+    /* HIGHLIGHT STAT BOXES */
+    .stat-box { background: var(--white); border-radius: 10px; padding: 1.2rem; text-align: center; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .stat-box .val { font-size: 1.6rem; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+
+    /* FEATURE CARDS */
+    .feature-card { border-radius: 10px; padding: 1.4rem; color: var(--white); }
+    .feature-card.blue { background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); }
+    .feature-card.gold { background: linear-gradient(135deg, var(--gold) 0%, #8a6d2a 100%); }
+    .feature-card.red  { background: linear-gradient(135deg, var(--red) 0%, #8a0d22 100%); }
+    .feature-card.navy { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); }
+    .feature-card.green { background: linear-gradient(135deg, #065f46 0%, #047857 100%); }
+    .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.85rem; opacity: 0.9; line-height: 1.6; margin-bottom: 0.9rem; }
+    .feature-card ul { font-size: 0.84rem; opacity: 0.9; line-height: 1.6; padding-left: 1.1rem; margin-bottom: 0.9rem; }
+
+    .btn { display: inline-block; padding: 0.55rem 1.3rem; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.84rem; transition: opacity 0.2s; }
+    .btn-white { background: var(--white); color: var(--navy); }
+    .btn-white:hover { opacity: 0.88; }
+    .btn-navy { background: var(--navy); color: var(--white); }
+    .btn-navy:hover { opacity: 0.88; }
+
+    .card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.6rem; }
+    .card p { font-size: 0.86rem; color: #374151; line-height: 1.6; }
+    .card p + p { margin-top: 0.6rem; }
+
+    footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 1.5rem; font-size: 0.8rem; margin-top: 1rem; line-height: 1.9; }
+    footer strong { color: var(--white); }
+    footer a { color: rgba(255,255,255,0.65); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <img src="dyc-logo.svg" alt="DYC Islanders" />
+      <div class="logo-text">
+        <h1>DYC Islanders</h1>
+        <span>Detroit Yacht Club · Summer 2026</span>
+      </div>
+    </a>
+    <nav>
+      <a href="index.html">Announcements</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="learn-to-swim.html">Learn to Swim</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="finals-2027.html" class="active">MICSA Finals</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="wave"></div>
+  <div class="page-header-inner">
+    <h2>MICSA Finals</h2>
+    <p>2026 Finals hosted by GOCC Gatorz &nbsp;&middot;&nbsp; 2027 Finals hosted by DYC</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- ══ 2026 FINALS ══ -->
+  <div class="finals-section">
+    <div class="finals-section-header">
+      <h2>2026 MICSA Finals</h2>
+      <span class="badge badge-gocc">Hosted by GOCC Gatorz</span>
+      <div class="section-rule rule-blue"></div>
+    </div>
+
+    <div class="two-col" style="margin-bottom:1.2rem;">
+      <div class="feature-card blue">
+        <h3>Tickets Are on Sale Now</h3>
+        <p>Tickets for the 2026 MICSA Finals are available now — including VIP tickets. Visit the official Finals website to purchase and get all event information.</p>
+        <a href="https://www.2026micsafinals.com" target="_blank" class="btn btn-white">Visit 2026micsafinals.com</a>
+      </div>
+      <div class="card">
+        <h3>About the 2026 Finals</h3>
+        <p>The 2026 MICSA Championship Finals is put on by the <strong>GOCC Gatorz</strong> (Great Oaks Country Club). All 14 MICSA clubs compete over the Finals weekend.</p>
+        <p>The official website has everything your family needs: ticket purchasing, merchandise, general event information, and more. Purchase tickets soon — VIP spots fill quickly.</p>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="feature-card gold">
+        <h3>Bucket-List Golf Raffle &mdash; Inverness Club</h3>
+        <p>The GOCC Gatorz Finals team is raffling off an extraordinary golf experience at Inverness Club in Toledo, Ohio (site of multiple U.S. Opens). The prize package includes:</p>
+        <ul>
+          <li>Two rounds of golf for six people at Inverness Club</li>
+          <li>Overnight lodging at an on-property home</li>
+          <li>Food, drinks, carts, and/or caddie fees included</li>
+          <li>To be scheduled during the 2027 golf season</li>
+        </ul>
+        <p>Raffle tickets benefit the 2026 MICSA Finals. Visit the Finals website for details.</p>
+        <a href="https://www.2026micsafinals.com" target="_blank" class="btn btn-white">Learn More</a>
+      </div>
+
+      <div class="feature-card red">
+        <h3>Cheer On Your Swimmer &mdash; Program Ads</h3>
+        <p>Families can reserve space in the official <strong>2026 MICSA Finals Program</strong> to send a personal message to their swimmer. Parents, grandparents, siblings, and friends are all welcome to participate.</p>
+        <p>This is a great way to celebrate your swimmer on a memorable occasion. Visit the Finals website or contact the team chairs for more information on how to purchase a program ad.</p>
+        <a href="mailto:lslott@gmail.com" class="btn btn-white">Contact Team Chairs</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 2027 FINALS ══ -->
+  <div class="finals-section">
+    <div class="finals-section-header">
+      <h2>2027 MICSA Finals</h2>
+      <span class="badge badge-dyc">Hosted by DYC</span>
+      <div class="section-rule rule-green"></div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <h3>DYC Is the Host Club</h3>
+        <p>Hosting the MICSA Championship Finals is a significant undertaking and a tremendous honor for Detroit Yacht Club. It requires coordination across the entire DYC community &mdash; from fundraising now through event day in 2027.</p>
+        <p>We'll share more details on this page as planning progresses. In the meantime, there are already ways to help.</p>
+      </div>
+
+      <div class="feature-card green">
+        <h3>Venetian Booth &mdash; June 27, 12:30&ndash;4:30pm</h3>
+        <p>One of our first fundraising efforts for the 2027 Finals is selling raffle tickets at the Venetian on June 27th. We need parent + kid pairs for 1-hour time slots.</p>
+        <p>Note: this does not count toward your volunteer requirement for the season.</p>
+        <a href="volunteer.html" class="btn btn-white">Sign Up on Volunteer Page</a>
+      </div>
+    </div>
+
+    <div class="card" style="border-left: 4px solid #10b981;">
+      <h3>More to Come</h3>
+      <p>Detailed planning for the 2027 Finals is underway. We'll be updating this page with volunteer opportunities, event details, and more as plans are finalized. Thank you for your support &mdash; hosting this event is a true team effort and we couldn't do it without this community.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <strong>DYC Islanders · Detroit Yacht Club · Summer 2026</strong><br>
+  Head Coach: Scott MacDonald · <a href="tel:5868503197">(586) 850-3197</a> · <a href="mailto:wsmacdonald79@gmail.com">wsmacdonald79@gmail.com</a><br>
+  Team Chairs: Leslie Lott · Ryan Sullivan<br><br>
+  All schedules subject to change.
+</footer>
+
+</body>
+</html>

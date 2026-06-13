@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DYC Islanders · Learn to Swim</title>
+  <style>
+    :root { --navy: #0a1f44; --navy-light: #122b5e; --red: #c8102e; --red-hover: #a50d26; --white: #ffffff; --off-white: #f4f6fb; --gray: #6b7280; --border: #dde3f0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--off-white); color: #1a1a2e; }
+
+    header { background: var(--navy); color: var(--white); padding: 0 2rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+    .header-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .logo { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--white); }
+    .logo img { height: 48px; width: auto; filter: brightness(0) invert(1); }
+    .logo-text h1 { font-size: 1.2rem; font-weight: 800; line-height: 1.1; }
+    .logo-text span { display: block; font-size: 0.67rem; font-weight: 400; opacity: 0.65; letter-spacing: 1.5px; text-transform: uppercase; }
+    nav { display: flex; align-items: center; gap: 0.15rem; }
+    nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.87rem; font-weight: 500; padding: 0.4rem 0.85rem; border-radius: 5px; transition: all 0.2s; white-space: nowrap; }
+    nav a:hover, nav a.active { color: var(--white); background: rgba(255,255,255,0.12); }
+
+    .page-header { background: var(--navy); color: var(--white); padding: 2.5rem 2rem 2rem; }
+    .page-header-inner { max-width: 1140px; margin: 0 auto; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .page-header p { font-size: 0.88rem; opacity: 0.65; }
+
+    main { max-width: 1140px; margin: 0 auto; padding: 2.5rem 1.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 2rem; }
+    @media (max-width: 820px) { main { grid-template-columns: 1fr; } nav { display: none; } }
+
+    .section-title { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--red); }
+    .card { background: var(--white); border-radius: 10px; padding: 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1.5rem; }
+
+    /* OVERVIEW STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-box { background: var(--white); border-radius: 10px; padding: 1.2rem; text-align: center; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .stat-box .val { font-size: 1.6rem; font-weight: 800; color: var(--navy); line-height: 1; }
+    .stat-box .lbl { font-size: 0.75rem; color: var(--gray); margin-top: 0.3rem; }
+
+    /* WEEK ROWS */
+    .week-row { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 0; border-bottom: 1px solid var(--border); gap: 1rem; }
+    .week-row:last-child { border-bottom: none; }
+    .week-label { font-weight: 700; color: var(--navy); font-size: 0.92rem; }
+    .week-dates { font-size: 0.8rem; color: var(--gray); margin-top: 2px; }
+    .week-days  { font-size: 0.78rem; color: var(--gray); }
+    .week-right { text-align: right; flex-shrink: 0; }
+    .price-badge { display: inline-block; background: var(--navy); color: var(--white); font-weight: 700; font-size: 0.82rem; padding: 3px 10px; border-radius: 5px; margin-bottom: 4px; }
+    .signup-link { display: block; font-size: 0.78rem; color: var(--red); text-decoration: none; }
+    .signup-link:hover { text-decoration: underline; }
+
+    /* SIDEBAR CARDS */
+    .info-card { background: var(--white); border-radius: 10px; padding: 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1.2rem; }
+    .info-card h3 { font-size: 0.92rem; font-weight: 700; color: var(--navy); margin-bottom: 0.7rem; }
+    .info-row { display: flex; gap: 0.5rem; font-size: 0.83rem; margin-bottom: 0.45rem; align-items: flex-start; }
+    .info-row .lbl { font-weight: 600; color: var(--navy); min-width: 75px; flex-shrink: 0; }
+    .info-row .val { color: #374151; }
+    .info-row a { color: var(--red); text-decoration: none; }
+    .info-row a:hover { text-decoration: underline; }
+
+    .payment-box { background: var(--off-white); border-radius: 8px; padding: 0.9rem 1rem; margin-top: 0.75rem; font-size: 0.82rem; }
+    .payment-box strong { display: block; font-size: 0.84rem; color: var(--navy); margin-bottom: 0.4rem; }
+    .payment-box p { color: #374151; line-height: 1.6; }
+
+    .mini-meet-box { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); color: var(--white); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.2rem; }
+    .mini-meet-box h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .mini-meet-box p { font-size: 0.83rem; opacity: 0.88; line-height: 1.55; }
+
+    footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 1.5rem; font-size: 0.8rem; margin-top: 1rem; line-height: 1.9; }
+    footer strong { color: var(--white); }
+    footer a { color: rgba(255,255,255,0.65); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <img src="dyc-logo.svg" alt="DYC Islanders" />
+      <div class="logo-text">
+        <h1>DYC Islanders</h1>
+        <span>Detroit Yacht Club · Summer 2026</span>
+      </div>
+    </a>
+    <nav>
+      <a href="index.html">Announcements</a>
+      <a href="calendar.html">Calendar</a>
+      <a href="learn-to-swim.html" class="active">Learn to Swim</a>
+      <a href="volunteer.html">Volunteer</a>
+      <a href="finals-2027.html">MICSA Finals</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-header">
+  <div class="page-header-inner">
+    <h2>Learn to Swim</h2>
+    <p>DYC Outdoor Pool &mdash; Shallow Area &middot; June 16 – July 17, 2026</p>
+  </div>
+</div>
+
+<main>
+  <div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="val">5</div>
+        <div class="lbl">Weeks of instruction</div>
+      </div>
+      <div class="stat-box">
+        <div class="val">$250</div>
+        <div class="lbl">Full session (22 days)</div>
+      </div>
+      <div class="stat-box">
+        <div class="val">11:30am</div>
+        <div class="lbl">Daily start time</div>
+      </div>
+    </div>
+
+    <div class="section-title">About the Program</div>
+    <div class="card">
+      <p style="font-size:0.88rem;line-height:1.65;color:#374151;">The 5-week Learn to Swim program is designed to introduce swimmers to the joy of swimming, build early water safety habits, and help children learn beginning swimming skills. Sessions run daily from 11:30am to 12:00pm at the DYC outdoor pool (shallow area) during the morning practice season.</p>
+      <p style="font-size:0.88rem;line-height:1.65;color:#374151;margin-top:0.75rem;">The full session covers all 22 days for $250. Weekly drop-in options are also available. Custom schedules can be arranged directly with Coach Scott. All payments must be made prior to the child participating in lessons.</p>
+    </div>
+
+    <div class="section-title">Weekly Sign-Ups &amp; Pricing</div>
+    <div class="card">
+      <div class="week-row">
+        <div>
+          <div class="week-label">Week 1</div>
+          <div class="week-dates">June 16 – 20</div>
+          <div class="week-days">5 days</div>
+        </div>
+        <div class="week-right">
+          <div class="price-badge">$60</div>
+          <a href="https://www.signupgenius.com/go/10C044AA8A72FA5FCC16-63872098-dyclts" target="_blank" class="signup-link">Sign Up</a>
+        </div>
+      </div>
+      <div class="week-row">
+        <div>
+          <div class="week-label">Week 2</div>
+          <div class="week-dates">June 24 – 27</div>
+          <div class="week-days">4 days &mdash; No June 23 (Detroit Fireworks)</div>
+        </div>
+        <div class="week-right">
+          <div class="price-badge">$50</div>
+          <a href="https://www.signupgenius.com/go/10C044AA8A72FA5FCC16-63924952-dyclts" target="_blank" class="signup-link">Sign Up</a>
+        </div>
+      </div>
+      <div class="week-row">
+        <div>
+          <div class="week-label">Week 3</div>
+          <div class="week-dates">June 30 – July 3</div>
+          <div class="week-days">4 days &mdash; No July 4 (Independence Day)</div>
+        </div>
+        <div class="week-right">
+          <div class="price-badge">$50</div>
+          <a href="https://www.signupgenius.com/go/10C044AA8A72FA5FCC16-63925479-dyclts" target="_blank" class="signup-link">Sign Up</a>
+        </div>
+      </div>
+      <div class="week-row">
+        <div>
+          <div class="week-label">Week 4</div>
+          <div class="week-dates">July 7 – 11</div>
+          <div class="week-days">5 days</div>
+        </div>
+        <div class="week-right">
+          <div class="price-badge">$60</div>
+          <a href="https://www.signupgenius.com/go/10C044AA8A72FA5FCC16-63925725-dyclts" target="_blank" class="signup-link">Sign Up</a>
+        </div>
+      </div>
+      <div class="week-row">
+        <div>
+          <div class="week-label">Week 5</div>
+          <div class="week-dates">July 14 – 17</div>
+          <div class="week-days">4 days &mdash; No July 18 (Mini Meet day)</div>
+        </div>
+        <div class="week-right">
+          <div class="price-badge">$50</div>
+          <a href="https://www.signupgenius.com/go/10C044AA8A72FA5FCC16-63925837-dyclearn" target="_blank" class="signup-link">Sign Up</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div>
+
+    <div class="mini-meet-box">
+      <h3>DYC Mini Meet &mdash; July 17th</h3>
+      <p>Optional for Learn to Swim participants. Ages 10 &amp; under. 8:00am start. Each swimmer gets 3 races, a T-shirt, and a continental breakfast. Additional fee &mdash; contact Coach Scott for details.</p>
+    </div>
+
+    <div class="info-card">
+      <h3>Program Details</h3>
+      <div class="info-row"><span class="lbl">Location</span><span class="val">DYC Outdoor Pool &mdash; Shallow Area</span></div>
+      <div class="info-row"><span class="lbl">Time</span><span class="val">11:30am &ndash; 12:00pm daily</span></div>
+      <div class="info-row"><span class="lbl">Season</span><span class="val">June 16 &ndash; July 17 (5 weeks)</span></div>
+      <div class="info-row"><span class="lbl">Full Session</span><span class="val">$250 for all 22 days</span></div>
+      <div class="info-row"><span class="lbl">Drop-In</span><span class="val">Available by week (see pricing)</span></div>
+    </div>
+
+    <div class="info-card">
+      <h3>Contact Coach Scott</h3>
+      <div class="info-row"><span class="lbl">Phone</span><span class="val"><a href="tel:5868503197">(586) 850-3197</a></span></div>
+      <div class="info-row"><span class="lbl">Email</span><span class="val"><a href="mailto:wsmacdonald79@gmail.com">wsmacdonald79@gmail.com</a></span></div>
+      <div class="payment-box">
+        <strong>Payment Options</strong>
+        <p>
+          Venmo: @William-MacDonald1036<br>
+          Zelle: 586-850-3197<br>
+          PayPal: scottymacd2<br>
+          Cash App: $CoachMacDonald<br><br>
+          <em>All payments must be made prior to participation. Custom schedules available &mdash; contact Coach Scott directly.</em>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <strong>DYC Islanders · Detroit Yacht Club · Summer 2026</strong><br>
+  Head Coach: Scott MacDonald · <a href="tel:5868503197">(586) 850-3197</a> · <a href="mailto:wsmacdonald79@gmail.com">wsmacdonald79@gmail.com</a><br>
+  Team Chairs: Leslie Lott · Ryan Sullivan<br><br>
+  All schedules subject to change.
+</footer>
+
+</body>
+</html>
