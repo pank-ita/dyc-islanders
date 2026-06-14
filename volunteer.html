@@ -298,7 +298,6 @@
         <tr${f['Urgent'] ? ' class="urgent-row"' : ''}>
           <td>${f['Date'] ? fmt(f['Date']) : ''}</td>
           <td>${f['Location'] || ''}</td>
-          <td style="white-space:nowrap">${f['Time'] || ''}</td>
           <td>${f['Slot Name'] || ''}${f['Urgent'] ? '<span class="slots-urgent">Urgent</span>' : ''}</td>
           <td><span class="slots-needed">${f['Slots Needed'] ?? '?'} needed</span></td>
         </tr>`).join('');
@@ -309,7 +308,6 @@
             <tr>
               <th>Date</th>
               <th>Location</th>
-              <th>Time</th>
               <th>Role</th>
               <th>Open Spots</th>
             </tr>
