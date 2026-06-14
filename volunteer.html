@@ -69,6 +69,17 @@
     .contact-row a { color: var(--red); text-decoration: none; }
     .contact-row a:hover { text-decoration: underline; }
 
+    /* VOLUNTEER SLOTS TABLE */
+    .slots-section { margin-bottom: 1.5rem; }
+    .slots-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; background: var(--white); border-radius: 10px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .slots-table th { background: var(--navy); color: var(--white); font-weight: 600; text-align: left; padding: 0.55rem 0.85rem; font-size: 0.8rem; }
+    .slots-table td { padding: 0.45rem 0.85rem; border-bottom: 1px solid var(--border); vertical-align: middle; color: #374151; }
+    .slots-table tr:last-child td { border-bottom: none; }
+    .slots-table tr:hover td { background: #f4f6fb; }
+    .slots-needed { display: inline-block; background: #fee2e2; color: #991b1b; font-weight: 700; padding: 0.1rem 0.55rem; border-radius: 4px; font-size: 0.8rem; }
+    .slots-loading { color: var(--gray); font-size: 0.85rem; padding: 0.5rem 0; }
+    .slots-empty { color: #059669; font-size: 0.85rem; padding: 0.75rem 0; font-weight: 600; }
+
     footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 1.5rem; font-size: 0.8rem; margin-top: 1rem; line-height: 1.9; }
     footer strong { color: var(--white); }
     footer a { color: rgba(255,255,255,0.65); }
@@ -171,14 +182,13 @@
       <p>Volunteer for a timing shift (or one of the other swim meet duties) and receive a free drink ticket. Families who don't volunteer are charged $100 at the end of the season.</p>
     </div>
 
-    <div class="section-title">Sign Up to Volunteer</div>
+    <div class="section-title">Volunteer Opportunities</div>
 
     <div class="signup-card">
       <div class="sc-icon sc-navy"></div>
       <div class="sc-body">
         <h3>Swim Meet Timing</h3>
-        <p>Help with timing races at home meets, tracking finishes, and passing out awards and ribbons. This is the primary volunteer opportunity each season. Sign up early and fill in gaps where you see them.</p>
-        <!-- REPLACE THIS URL with the actual SignUpGenius link for meet timing -->
+        <p>Help with timing races at home meets, tracking finishes, and passing out awards and ribbons. This is the primary volunteer opportunity each season — also includes MC, DJ, Runner, and other meet support roles. Sign up early and fill in gaps where you see them.</p>
         <a href="https://www.signupgenius.com/go/30E054BAAAE2FA6F94-63123945-2026#/" target="_blank" class="btn">Sign Up for Meet Timing</a>
       </div>
     </div>
@@ -188,25 +198,17 @@
       <div class="sc-body">
         <h3>Venetian Booth &mdash; June 27, 12:30–4:30pm</h3>
         <p>Help sell raffle tickets at the Venetian to support DYC hosting the 2027 MICSA Finals. We need parent + kid pairs for 1-hour time slots. Note: this does not count toward your volunteer requirement for the season.</p>
-        <!-- REPLACE THIS URL with the actual SignUpGenius link for Venetian booth -->
         <a href="https://www.signupgenius.com/go/70A0448AEAA2BABFB6-64362451-dycislanders#/" target="_blank" class="btn btn-navy">Sign Up for Venetian Booth</a>
       </div>
     </div>
 
-    <div class="section-title">Other Volunteer Opportunities</div>
+    <div class="section-title">Open Slots — Help Needed</div>
+    <div id="slots-container" class="slots-section">
+      <p class="slots-loading">Loading open slots…</p>
+    </div>
+
+    <div class="section-title">Other Opportunities</div>
     <div class="card">
-      <div class="opp-item">
-        <strong>Meet MC</strong>
-        <p>Announce the participants for each race and add color commentary. Ryan Sullivan has volunteered for the 2nd and 3rd home meets &mdash; still need someone for the June 18th home meet. Sign up via the <a href="https://www.signupgenius.com/go/30E054BAAAE2FA6F94-63123945-2026#/" target="_blank">Swim Meet Timing SignUpGenius</a>.</p>
-      </div>
-      <div class="opp-item">
-        <strong>Meet DJ</strong>
-        <p>Develop a playlist and run the audio equipment during the meet to play music between swim races. Needed for June 18, June 30, and July 14 meets. Sign up via the <a href="https://www.signupgenius.com/go/30E054BAAAE2FA6F94-63123945-2026#/" target="_blank">Swim Meet Timing SignUpGenius</a>.</p>
-      </div>
-      <div class="opp-item">
-        <strong>Floaty Friday Lead</strong>
-        <p>Arrive at practice at 9am to fill team floaties with air and transport them from DYC storage to the pool deck. Stay until 11am to deflate and put them away. Needed June 19, June 26, July 3, and July 10.</p>
-      </div>
       <div class="opp-item">
         <strong>Movie Night Organizer</strong>
         <p>Choose a night for a movie on the pool deck, coordinate with DYC for snacks and projector setup, and work with lifeguards to staff the event. DYC provides and purchases snacks.</p>
@@ -255,6 +257,72 @@
     btn.classList.remove('open');
     nav.classList.remove('open');
   }));
+</script>
+
+<!-- Volunteer Slots from Airtable -->
+<script>
+  const SLOTS_TOKEN = 'patkJpKueaHuqyzBZ.380b2d07e15f887b88f6cf4fdddd2f3ebd1896876548ed9c125cb4be44c0b991';
+  const SLOTS_BASE  = 'app6vDty1hbxKQw3H';
+  const SLOTS_TABLE = 'tbln2tMRl7NRKc2UP';
+
+  async function loadSlots() {
+    const container = document.getElementById('slots-container');
+    try {
+      const params = new URLSearchParams({
+        'filterByFormula': '{Filled}=FALSE()',
+        'sort[0][field]': 'Date',
+        'sort[0][direction]': 'asc',
+        'sort[1][field]': 'Location',
+        'sort[1][direction]': 'asc'
+      });
+      const res = await fetch(
+        `https://api.airtable.com/v0/${SLOTS_BASE}/${SLOTS_TABLE}?${params}`,
+        { headers: { 'Authorization': `Bearer ${SLOTS_TOKEN}` } }
+      );
+      if (!res.ok) throw new Error(`Airtable error ${res.status}`);
+      const { records } = await res.json();
+
+      if (!records.length) {
+        container.innerHTML = '<p class="slots-empty">✓ All slots are currently filled — thank you, volunteers!</p>';
+        return;
+      }
+
+      const fmt = d => {
+        const [y, m, day] = d.split('-');
+        const dt = new Date(+y, +m - 1, +day);
+        return dt.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      };
+
+      const rows = records.map(({ fields: f }) => `
+        <tr>
+          <td>${f['Date'] ? fmt(f['Date']) : ''}</td>
+          <td>${f['Location'] || ''}</td>
+          <td style="white-space:nowrap">${f['Time'] || ''}</td>
+          <td>${f['Slot Name'] || ''}</td>
+          <td><span class="slots-needed">${f['Slots Needed'] ?? '?'} needed</span></td>
+        </tr>`).join('');
+
+      container.innerHTML = `
+        <table class="slots-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Location</th>
+              <th>Time</th>
+              <th>Role</th>
+              <th>Open Spots</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p style="font-size:0.78rem;color:var(--gray);margin-top:0.6rem;">Sign up via the <a href="https://www.signupgenius.com/go/30E054BAAAE2FA6F94-63123945-2026#/" target="_blank" style="color:var(--red)">Swim Meet Timing SignUpGenius</a>. Data updated manually — check SignUpGenius for real-time totals.</p>`;
+    } catch (err) {
+      container.innerHTML = '<p class="slots-loading">Could not load slot data. Check SignUpGenius directly.</p>';
+      console.error('Slots fetch failed:', err);
+    }
+  }
+
+  loadSlots();
 </script>
 </body>
 </html>
