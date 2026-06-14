@@ -134,110 +134,8 @@
   </div>
 </div>
 
-<main>
-
-  <div class="section-group">
-    <div class="section-title">Season Documents</div>
-    <div class="file-grid">
-
-      <a href="Islanders_2026_Parent_Letter.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>2026 Parent Letter</strong>
-          <span>Season overview &amp; info</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="Summer_2026_DYC_Islanders_Schedule.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>2026 Season Schedule</strong>
-          <span>Full meet &amp; practice schedule</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="DYC_Islanders_Summer_2026_Volunteer_Flier.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>Volunteer Flier</strong>
-          <span>Volunteer opportunities &amp; policy</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="DYC_2026_LearnToSwim.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>Learn to Swim Program</strong>
-          <span>Session details &amp; sign-up info</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section-group">
-    <div class="section-title">Meet Info</div>
-    <div class="file-grid">
-
-      <a href="DYC-vs-DGC-Meet-June16.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>DYC @ DGC Meet Info Sheet</strong>
-          <span>June 16 &mdash; timeline, parking, dining</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="DYC-vs-DGC-Email.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>DGC Welcome Email</strong>
-          <span>Detroit Golf Club's guide for visiting teams</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-    </div>
-  </div>
-
-  <div class="section-group">
-    <div class="section-title">2026 MICSA Finals</div>
-    <div class="file-grid">
-
-      <a href="Detroit-Lions-Tickets-Raffle-2026.jpg" target="_blank" class="file-card">
-        <div class="file-icon icon-img">IMG</div>
-        <div class="file-info">
-          <strong>Detroit Lions Thanksgiving Raffle</strong>
-          <span>4 Club Level seats &mdash; value over $2,500</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="Inverness-Raffle.jpg" target="_blank" class="file-card">
-        <div class="file-icon icon-img">IMG</div>
-        <div class="file-info">
-          <strong>Inverness Club Golf Raffle</strong>
-          <span>2 rounds for 6 &mdash; value approx. $10,000</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-      <a href="Cheer-a-Swimmer-Flyer.pdf" target="_blank" class="file-card">
-        <div class="file-icon icon-pdf">PDF</div>
-        <div class="file-info">
-          <strong>Cheer a Swimmer Flyer</strong>
-          <span>2026 Finals program ad info</span>
-        </div>
-        <span class="file-arrow">&#8250;</span>
-      </a>
-
-    </div>
-  </div>
-
+<main id="files-main">
+  <p style="color:#6b7280;font-size:0.85rem;padding:0.5rem 0;">Loading files…</p>
 </main>
 
 <footer>
@@ -258,6 +156,69 @@
     btn.classList.remove('open');
     nav.classList.remove('open');
   }));
+</script>
+
+<!-- Airtable Files -->
+<script>
+  const AIRTABLE_TOKEN = 'patkJpKueaHuqyzBZ.380b2d07e15f887b88f6cf4fdddd2f3ebd1896876548ed9c125cb4be44c0b991';
+  const BASE_ID     = 'app6vDty1hbxKQw3H';
+  const FILES_TABLE = 'tblrwKRtliLVmHCET';
+
+  async function loadFiles() {
+    const main = document.getElementById('files-main');
+    try {
+      const params = new URLSearchParams({
+        'filterByFormula': 'AND({Active}=TRUE())',
+        'sort[0][field]': 'Sort Order',
+        'sort[0][direction]': 'asc'
+      });
+      const res = await fetch(
+        `https://api.airtable.com/v0/${BASE_ID}/${FILES_TABLE}?${params}`,
+        { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } }
+      );
+      if (!res.ok) throw new Error(`Airtable error ${res.status}`);
+      const { records } = await res.json();
+
+      // Group by section
+      const sections = {};
+      records.forEach(({ fields: f }) => {
+        const sec = f['Section'] || 'Other';
+        if (!sections[sec]) sections[sec] = [];
+        sections[sec].push(f);
+      });
+
+      if (!Object.keys(sections).length) {
+        main.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">No files available.</p>';
+        return;
+      }
+
+      main.innerHTML = Object.entries(sections).map(([section, files]) => `
+        <div class="section-group">
+          <div class="section-title">${section}</div>
+          <div class="file-grid">
+            ${files.map(f => {
+              const type     = (f['File Type'] || 'PDF').toUpperCase();
+              const iconCls  = type === 'IMG' ? 'icon-img' : 'icon-pdf';
+              const iconText = type;
+              return `
+                <a href="${f['URL'] || '#'}" target="_blank" class="file-card">
+                  <div class="file-icon ${iconCls}">${iconText}</div>
+                  <div class="file-info">
+                    <strong>${f['Name'] || ''}</strong>
+                    <span>${f['Description'] || ''}</span>
+                  </div>
+                  <span class="file-arrow">&#8250;</span>
+                </a>`;
+            }).join('')}
+          </div>
+        </div>`).join('');
+    } catch (err) {
+      main.innerHTML = '<p style="color:#c8102e;font-size:0.85rem;">Could not load files. Please try again later.</p>';
+      console.error('Files fetch failed:', err);
+    }
+  }
+
+  loadFiles();
 </script>
 </body>
 </html>
