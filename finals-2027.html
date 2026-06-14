@@ -212,6 +212,15 @@
         <a href="mailto:lslott@gmail.com" class="btn btn-white">Contact Team Chairs</a>
       </div>
     </div>
+
+    <div class="two-col">
+      <div class="feature-card navy">
+        <h3>Detroit Lions Thanksgiving Day Raffle</h3>
+        <p>Win 4 seats in Section 200 Club Level with deck parking and Club Level amenities for the Lions Thanksgiving Day game on Thursday, November 26th. Experience valued at over $2,500.</p>
+        <p style="opacity:0.85; font-size:0.82rem; margin-bottom:0.9rem;">Tickets $100 each &mdash; applied to your member account. Drawing Sunday, July 26th.</p>
+        <a href="mailto:amber@greatoakscc.com" class="btn btn-white">Contact Amber Beebe to Purchase</a>
+      </div>
+    </div>
   </div>
 
   <!-- ══ 2027 FINALS ══ -->
@@ -243,48 +252,8 @@
       <div class="section-rule rule-green"></div>
     </div>
 
-    <div class="two-col">
-      <div class="card">
-        <h3>July 4th VIP Poolside Cabana Raffle</h3>
-        <p>Win a reserved shaded tent and two lounge chairs poolside for the DYC July 4th Pool Party. A perfect way to watch the festivities in style — raffle proceeds support the 2027 Finals.</p>
-        <p style="margin-top:0.5rem; font-size:0.82rem; color:#6b7280;">Purchase tickets at the Islanders' booth at the Venetian on Saturday, 6/27.</p>
-      </div>
-      <div class="card">
-        <h3>Starting Block Sponsorships</h3>
-        <p style="display:inline-block; background:#fee2e2; color:#991b1b; font-weight:700; font-size:0.8rem; padding:2px 10px; border-radius:20px; margin-bottom:0.6rem;">SOLD OUT</p>
-        <p>Thank you to all who sponsored a starting block.</p>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <h3>2027 Finals Sponsorships</h3>
-        <p>Business or personal sponsorships of the 2027 MICSA Finals are available. Contact Alison for sponsorship levels and details.</p>
-        <p style="margin-top:0.5rem; font-size:0.82rem; color:#6b7280;">Contact: <a href="mailto:alipurdon@gmail.com" style="color:#c8102e;">Alison Purdon</a> &mdash; alipurdon@gmail.com</p>
-      </div>
-      <div class="card">
-        <h3>Finals Program Ads</h3>
-        <p>Reserve space in the official 2027 MICSA Finals program to celebrate your swimmer or promote your business. A lasting keepsake from a landmark event at DYC.</p>
-        <p style="margin-top:0.5rem; font-size:0.82rem; color:#6b7280;">Contact: <a href="mailto:alipurdon@gmail.com" style="color:#c8102e;">Alison Purdon</a> &mdash; alipurdon@gmail.com</p>
-      </div>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <h3>Fall Dinner &amp; Silent Auction</h3>
-        <p>More details coming soon on our fall fundraising dinner and silent auction benefiting the 2027 MICSA Finals. Stay tuned for date and ticket information.</p>
-        <p style="margin-top:0.5rem; font-size:0.82rem; color:#6b7280;">Contact: Adam Jones</p>
-      </div>
-      <div class="card">
-        <h3>Harbor Store</h3>
-        <p>A portion of proceeds from select Harbor Store items goes directly toward the 2027 Finals. Shop at the DYC Harbor Store and support the team at the same time.</p>
-      </div>
-    </div>
-
-    <div class="card" style="border-left: 4px solid #10b981;">
-      <h3>99Pledges &mdash; Kids Fundraising</h3>
-      <p>Each swimmer can set up a personal fundraising page through 99Pledges to collect pledges from friends and family. It's a great way for kids to be part of the effort and earn recognition for their contributions.</p>
-      <p style="margin-top:0.6rem;"><a href="https://app.99pledges.com/fund/dycislanders" target="_blank" style="color:#c8102e; font-weight:600;">Visit the team fundraising page &rarr;</a></p>
+    <div id="fundraisers-container">
+      <p style="color:#6b7280;font-size:0.85rem;">Loading fundraisers…</p>
     </div>
   </div>
 
@@ -309,6 +278,94 @@
     btn.classList.remove('open');
     nav.classList.remove('open');
   }));
+</script>
+
+<!-- Airtable Fundraisers -->
+<script>
+  const AIRTABLE_TOKEN      = 'patkJpKueaHuqyzBZ.380b2d07e15f887b88f6cf4fdddd2f3ebd1896876548ed9c125cb4be44c0b991';
+  const BASE_ID             = 'app6vDty1hbxKQw3H';
+  const FUNDRAISERS_TABLE   = 'tbl02Lv5OaUhquFIe';
+
+  async function loadFundraisers() {
+    const container = document.getElementById('fundraisers-container');
+    try {
+      const params = new URLSearchParams({
+        'filterByFormula': 'AND({Active}=TRUE())',
+        'sort[0][field]': 'Sort Order',
+        'sort[0][direction]': 'asc'
+      });
+      const res = await fetch(
+        `https://api.airtable.com/v0/${BASE_ID}/${FUNDRAISERS_TABLE}?${params}`,
+        { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } }
+      );
+      if (!res.ok) throw new Error(`Airtable error ${res.status}`);
+      const { records } = await res.json();
+
+      if (!records.length) {
+        container.innerHTML = '<p style="color:#6b7280;font-size:0.85rem;">No fundraisers at this time.</p>';
+        return;
+      }
+
+      // Split into pairs for two-col grid, with highlighted ones full-width
+      const cards = records.map(({ fields: f }) => {
+        const status    = f['Status'] || 'Active';
+        const highlight = f['Highlight'];
+        const soldOut   = status === 'Sold Out';
+        const comingSoon = status === 'Coming Soon';
+
+        const statusBadge = soldOut
+          ? `<p style="display:inline-block;background:#fee2e2;color:#991b1b;font-weight:700;font-size:0.8rem;padding:2px 10px;border-radius:20px;margin-bottom:0.6rem;">SOLD OUT</p>`
+          : comingSoon
+          ? `<p style="display:inline-block;background:#fef3c7;color:#92400e;font-weight:700;font-size:0.8rem;padding:2px 10px;border-radius:20px;margin-bottom:0.6rem;">COMING SOON</p>`
+          : '';
+
+        const contactLine = f['Contact Name']
+          ? `<p style="margin-top:0.5rem;font-size:0.82rem;color:#6b7280;">Contact: <a href="mailto:${f['Contact Email'] || ''}" style="color:#c8102e;">${f['Contact Name']}</a>${f['Contact Email'] ? ' — ' + f['Contact Email'] : ''}</p>`
+          : '';
+
+        const linkLine = f['Link URL']
+          ? `<p style="margin-top:0.6rem;"><a href="${f['Link URL']}" target="_blank" style="color:#c8102e;font-weight:600;">${f['Link Text'] || 'Learn more'} &rarr;</a></p>`
+          : '';
+
+        const noteLine = f['Note']
+          ? `<p style="margin-top:0.5rem;font-size:0.82rem;color:#6b7280;">${f['Note']}</p>`
+          : '';
+
+        const cardStyle = highlight ? ' style="border-left:4px solid #10b981;"' : '';
+        const wrapClass = highlight ? 'fundraiser-full' : 'fundraiser-half';
+
+        return `<div class="${wrapClass}"><div class="card"${cardStyle}>
+          <h3>${f['Title'] || ''}</h3>
+          ${statusBadge}
+          <p>${(f['Description'] || '').replace(/\n/g, '<br>')}</p>
+          ${noteLine}${contactLine}${linkLine}
+        </div></div>`;
+      });
+
+      // Build HTML: pair up halves into two-col rows, full-width ones go solo
+      let html = '';
+      let i = 0;
+      while (i < cards.length) {
+        if (records[i].fields['Highlight']) {
+          html += cards[i];
+          i++;
+        } else if (i + 1 < cards.length && !records[i + 1].fields['Highlight']) {
+          html += `<div class="two-col">${cards[i]}${cards[i+1]}</div>`;
+          i += 2;
+        } else {
+          html += `<div class="two-col">${cards[i]}</div>`;
+          i++;
+        }
+      }
+
+      container.innerHTML = html;
+    } catch (err) {
+      container.innerHTML = '<p style="color:#c8102e;font-size:0.85rem;">Could not load fundraisers. Please try again later.</p>';
+      console.error('Fundraisers fetch failed:', err);
+    }
+  }
+
+  loadFundraisers();
 </script>
 </body>
 </html>
