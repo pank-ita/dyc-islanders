@@ -189,102 +189,8 @@
           <thead>
             <tr><th>Date</th><th>Event</th><th>Type</th></tr>
           </thead>
-          <tbody>
-            <tr class="past-row">
-              <td class="date-col">Fri Jun 12</td>
-              <td>Pontchartrain Relays @ DGC &mdash; Ages 13+ &middot; PM</td>
-              <td><span class="etype type-meet">Relay Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Mon Jun 15</td>
-              <td>Morning Practices Begin &mdash; Outdoor AM schedule</td>
-              <td><span class="etype type-prac">Schedule Change</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Tue Jun 16</td>
-              <td>Swim Meet @ Detroit Golf Club &mdash; Arrive by 4:15pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Thu Jun 18</td>
-              <td>Swim Meet @ DYC vs. Grosse Ile &mdash; Arrive by 3:45pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Fri Jun 19</td>
-              <td>Juneteenth Holiday &mdash; AM Practice continues</td>
-              <td><span class="etype type-hol">Holiday</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Mon Jun 22</td>
-              <td>No Practice &mdash; Detroit Fireworks Day</td>
-              <td><span class="etype type-noprac">No Practice</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Thu Jun 25</td>
-              <td>Swim Meet @ Oakland Hills &mdash; Arrive by 4:15pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Fri Jun 26</td>
-              <td>Firecracker Meet @ Plum Hollow &mdash; Ages 11–12 only &middot; Team Pictures (tentative)</td>
-              <td><span class="etype type-meet">Invitational</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Sat Jun 27</td>
-              <td>Venetian Festival Fundraiser &mdash; 12:30–4:30pm</td>
-              <td><span class="etype type-event">Fundraiser</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Tue Jun 30</td>
-              <td>Swim Meet @ DYC vs. Plum Hollow &mdash; Arrive by 3:45pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Sat Jul 4</td>
-              <td>Independence Day &mdash; No Practice</td>
-              <td><span class="etype type-hol">Holiday</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Tue Jul 7</td>
-              <td>Swim Meet @ Western &mdash; Arrive by 4:15pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Tue Jul 14</td>
-              <td>Swim Meet @ DYC vs. Dearborn &mdash; Arrive by 3:45pm</td>
-              <td><span class="etype type-meet">Dual Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Fri Jul 17</td>
-              <td>DYC Mini Meet &mdash; Ages 10 &amp; Under &middot; 8:00am &middot; 3 races + T-shirt + Breakfast &middot; No regular practice</td>
-              <td><span class="etype type-meet">Mini Meet</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Sat Jul 18</td>
-              <td>No Practice &mdash; Detroit Marathon Day &middot; Last day of AM season</td>
-              <td><span class="etype type-noprac">No Practice</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Mon–Fri Jul 20–24</td>
-              <td>Championship Schedule in Effect</td>
-              <td><span class="etype type-champs">Championships</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Fri Jul 24</td>
-              <td>Championships &mdash; 10 &amp; Under Swim Meet</td>
-              <td><span class="etype type-champs">Championships</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Sat Jul 25</td>
-              <td>Championships &mdash; Ages 11+ Swim Meet</td>
-              <td><span class="etype type-champs">Championships</span></td>
-            </tr>
-            <tr>
-              <td class="date-col">Sun Jul 26</td>
-              <td>Championship Finals &amp; Parade &mdash; Top 14 qualifiers</td>
-              <td><span class="etype type-champs">Championships</span></td>
-            </tr>
+          <tbody id="events-tbody">
+            <tr><td colspan="3" style="color:#6b7280;font-size:0.85rem;padding:0.75rem 0.65rem;">Loading events…</td></tr>
           </tbody>
         </table>
         <p class="note" style="margin-top:0.75rem;">Past events shown faded.</p>
@@ -367,6 +273,55 @@
     document.getElementById('tab-' + id).classList.add('active');
     btn.classList.add('active');
   }
+</script>
+
+<!-- Airtable Events -->
+<script>
+  const AIRTABLE_TOKEN = 'patkJpKueaHuqyzBZ.380b2d07e15f887b88f6cf4fdddd2f3ebd1896876548ed9c125cb4be44c0b991';
+  const BASE_ID      = 'app6vDty1hbxKQw3H';
+  const EVENTS_TABLE = 'tblid42vv2ln5cLvi';
+
+  const TYPE_CLASS = { meet: 'type-meet', champs: 'type-champs', noprac: 'type-noprac', event: 'type-event', prac: 'type-prac', hol: 'type-hol' };
+
+  async function loadEvents() {
+    const tbody = document.getElementById('events-tbody');
+    try {
+      const params = new URLSearchParams({
+        'sort[0][field]': 'Sort Date',
+        'sort[0][direction]': 'asc'
+      });
+      const res = await fetch(
+        `https://api.airtable.com/v0/${BASE_ID}/${EVENTS_TABLE}?${params}`,
+        { headers: { 'Authorization': `Bearer ${AIRTABLE_TOKEN}` } }
+      );
+      if (!res.ok) throw new Error(`Airtable error ${res.status}`);
+      const { records } = await res.json();
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      tbody.innerHTML = records.map(({ fields: f }) => {
+        const sortDate = f['Sort Date'] ? new Date(f['Sort Date'] + 'T00:00:00') : null;
+        const isPast   = sortDate && sortDate < today;
+        const type     = (f['Type'] || 'event').toLowerCase();
+        const cls      = TYPE_CLASS[type] || 'type-event';
+        return `<tr${isPast ? ' class="past-row"' : ''}>
+          <td class="date-col">${f['Date Label'] || ''}</td>
+          <td>${f['Event Name'] || ''}</td>
+          <td><span class="etype ${cls}">${f['Type Label'] || ''}</span></td>
+        </tr>`;
+      }).join('');
+
+      if (!records.length) {
+        tbody.innerHTML = '<tr><td colspan="3" style="color:#6b7280;font-size:0.85rem;padding:0.75rem 0.65rem;">No events scheduled.</td></tr>';
+      }
+    } catch (err) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:#c8102e;font-size:0.85rem;padding:0.75rem 0.65rem;">Could not load events. Please try again later.</td></tr>';
+      console.error('Events fetch failed:', err);
+    }
+  }
+
+  loadEvents();
 </script>
 
 <script>
