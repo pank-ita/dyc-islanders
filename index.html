@@ -57,17 +57,54 @@
     .card { background: var(--white); border-radius: 10px; padding: 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 1px solid var(--border); margin-bottom: 1.5rem; }
 
     /* ANNOUNCEMENTS */
-    .announcement { border-left: 4px solid var(--red); padding: 0.1rem 0 0.1rem 1rem; margin-bottom: 1.2rem; }
+    .announcement { border-left: 4px solid var(--red); margin-bottom: 1.2rem; border-radius: 0 4px 4px 0; }
     .announcement:last-child { margin-bottom: 0; }
-    .badge { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 20px; margin-bottom: 0.3rem; }
+
+    /* Clickable header — always visible */
+    .ann-header {
+      display: flex; align-items: flex-start; gap: 0.5rem;
+      padding: 0.55rem 0.6rem 0.45rem 1rem;
+      cursor: pointer; user-select: none;
+    }
+    .ann-header:hover { background: #fafbff; border-radius: 0 4px 0 0; }
+    .ann-header-left { flex: 1; min-width: 0; }
+    .ann-chevron {
+      flex-shrink: 0; margin-top: 2px; color: #cbd5e1;
+      transition: transform 0.22s ease, color 0.15s;
+    }
+    .ann-header:hover .ann-chevron { color: #94a3b8; }
+    .announcement.open .ann-chevron { transform: rotate(90deg); color: #94a3b8; }
+
+    /* Title */
+    .ann-title { font-size: 0.96rem; font-weight: 700; color: var(--navy); margin-bottom: 0.2rem; line-height: 1.3; }
+    .ann-header:hover .ann-title { color: var(--red); transition: color 0.15s; }
+
+    /* Badge + date row — always visible below title */
+    .ann-meta { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
+    .ann-date { font-size: 0.72rem; color: #9ca3af; }
+
+    /* Badge */
+    .badge { display: inline-block; font-size: 0.67rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 20px; }
     .badge-urgent { background: #fee2e2; color: #991b1b; }
     .badge-new    { background: #fef3c7; color: #92400e; }
     .badge-info   { background: #dbeafe; color: #1e40af; }
     .badge-green  { background: #d1fae5; color: #065f46; }
-    .announcement h3 { font-size: 0.96rem; font-weight: 700; color: var(--navy); margin-bottom: 0.3rem; }
-    .announcement p  { font-size: 0.85rem; color: #374151; line-height: 1.55; }
-    .announcement a  { color: var(--red); }
-    .ann-date { font-size: 0.74rem; color: #9ca3af; margin-top: 0.35rem; }
+
+    /* Collapsible body */
+    .ann-body-wrap {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.28s ease, opacity 0.22s ease, padding 0.22s ease;
+      padding: 0 0.6rem 0 1rem;
+    }
+    .announcement.open .ann-body-wrap {
+      max-height: 1000px;
+      opacity: 1;
+      padding: 0 0.6rem 0.65rem 1rem;
+    }
+
+    /* Body content */
     .ann-body p  { font-size: 0.85rem; color: #374151; line-height: 1.55; margin-bottom: 0.4rem; }
     .ann-body ul { font-size: 0.85rem; color: #374151; line-height: 1.7; padding-left: 1.2rem; margin-top: 0.4rem; }
     .ann-body strong { font-weight: 700; color: #0a1f44; }
@@ -98,6 +135,26 @@
     .up-date .d { font-size: 1.3rem; font-weight: 800; line-height: 1; }
     .up-info strong { display: block; color: var(--navy); font-size: 0.84rem; }
     .up-info span { font-size: 0.78rem; color: var(--gray); }
+
+    /* VOLUNTEER SLOTS WIDGET */
+    .vol-slots-card { background: var(--white); border-radius: 10px; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 1.2rem; overflow: hidden; }
+    .vol-slots-header { display: flex; align-items: center; justify-content: space-between; padding: 0.65rem 0.85rem 0.55rem; border-bottom: 1px solid var(--border); }
+    .vol-slots-header span { font-size: 0.85rem; font-weight: 700; color: var(--navy); }
+    .vol-slots-header a { font-size: 0.72rem; color: var(--gray); text-decoration: none; font-weight: 500; transition: color 0.15s; }
+    .vol-slots-header a:hover { color: var(--red); }
+    .vol-slot-row { display: flex; align-items: center; gap: 0.5rem; padding: 0 0.85rem; height: 36px; border-bottom: 1px solid #f3f5fa; border-left: 3px solid transparent; transition: background 0.12s; }
+    .vol-slot-row:last-child { border-bottom: none; }
+    .vol-slot-row:hover { background: #f7f9fd; }
+    .vol-slot-row.urgent { border-left-color: var(--red); }
+    .vs-date { font-size: 0.72rem; font-family: 'Courier New', monospace; color: var(--gray); flex-shrink: 0; width: 34px; }
+    .vs-name { flex: 1; font-size: 0.79rem; font-weight: 500; color: #374151; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .vs-loc  { font-size: 0.72rem; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70px; flex-shrink: 1; }
+    .vs-count { font-size: 0.8rem; font-weight: 700; color: #9ca3af; flex-shrink: 0; min-width: 18px; text-align: right; }
+    .vol-slot-row.urgent .vs-count { color: var(--red); }
+    .vol-slots-footer { display: block; text-align: center; padding: 0.5rem; font-size: 0.74rem; font-weight: 600; color: var(--gray); text-decoration: none; background: #f8f9fc; border-top: 1px solid var(--border); transition: color 0.15s; }
+    .vol-slots-footer:hover { color: var(--red); }
+    .vol-slots-empty { padding: 0.75rem 0.85rem; font-size: 0.79rem; color: var(--gray); }
+    .vol-slots-loading { padding: 0.75rem 0.85rem; font-size: 0.79rem; color: var(--gray); }
 
     /* FOOTER */
     footer { background: var(--navy); color: rgba(255,255,255,0.5); text-align: center; padding: 2rem 1.5rem; font-size: 0.8rem; margin-top: 1rem; line-height: 1.9; }
@@ -216,6 +273,17 @@
       <iframe src="https://calendar.google.com/calendar/embed?src=j2tv2iujl30os4b1a9ccbkrkbj8ntjfp%40import.calendar.google.com&ctz=America%2FNew_York&mode=AGENDA" style="border: 0; border-radius: 4px;" width="100%" height="400" frameborder="0" scrolling="no"></iframe>
     </div>
 
+    <div class="vol-slots-card" id="vol-slots-widget">
+      <div class="vol-slots-header">
+        <span>🙋 Volunteer Slots Needed</span>
+        <a href="volunteer.html">See all →</a>
+      </div>
+      <div id="vol-slots-rows">
+        <p class="vol-slots-loading">Loading…</p>
+      </div>
+      <a href="volunteer.html" class="vol-slots-footer">Sign up on the Volunteer page →</a>
+    </div>
+
     <div class="section-title" style="margin-top:0.5rem;">Quick Links</div>
     <div class="card" style="padding: 0.3rem 1.2rem;">
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSehuLidiVZUWbo3he6p-aDY3E6dqPXh3mcsJjmhYbMvmdS4Bw/viewform" target="_blank" class="quick-link">Registration Form <span class="arrow">&#8250;</span></a>
@@ -278,21 +346,43 @@
       }
 
       container.innerHTML = records.map(({ fields: f }) => {
-        const type  = (f['Badge Type'] || 'info').toLowerCase();
-        const cls   = BADGE_CLASS[type] || 'badge-info';
-        const label = f['Badge Label'] || '';
-        const date  = f['Date']
+        const type      = (f['Badge Type'] || 'info').toLowerCase();
+        const cls       = BADGE_CLASS[type] || 'badge-info';
+        const label     = f['Badge Label'] || '';
+        const isOpen    = !!f['Default Open'];
+        const date      = f['Date']
           ? new Date(f['Date'] + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
           : '';
-        const body  = marked.parse(f['Body'] || '');
+        const body      = marked.parse(f['Body'] || '');
+        const chevron   = `<svg class="ann-chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                           </svg>`;
         return `
-          <div class="announcement">
-            ${label ? `<span class="badge ${cls}">${label}</span>` : ''}
-            <h3>${f['Title'] || ''}</h3>
-            <div class="ann-body">${body}</div>
-            ${date ? `<div class="ann-date">${date}</div>` : ''}
+          <div class="announcement${isOpen ? ' open' : ''}">
+            <div class="ann-header">
+              <div class="ann-header-left">
+                <div class="ann-title">${f['Title'] || ''}</div>
+                <div class="ann-meta">
+                  ${label ? `<span class="badge ${cls}">${label}</span>` : ''}
+                  ${date  ? `<span class="ann-date">${date}</span>`       : ''}
+                </div>
+              </div>
+              ${chevron}
+            </div>
+            <div class="ann-body-wrap">
+              <div class="ann-body">${body}</div>
+            </div>
           </div>`;
       }).join('');
+
+      // Toggle on click
+      container.addEventListener('click', function(e) {
+        const header = e.target.closest('.ann-header');
+        if (!header) return;
+        // Don't collapse if they clicked a link inside the header
+        if (e.target.closest('a')) return;
+        header.closest('.announcement').classList.toggle('open');
+      });
     } catch (err) {
       container.innerHTML = '<p style="color:#c8102e;font-size:0.85rem;padding:0.5rem 0;">Could not load announcements. Please try again later.</p>';
       console.error('Announcements fetch failed:', err);
@@ -300,6 +390,61 @@
   }
 
   loadAnnouncements();
+</script>
+
+<!-- Volunteer Open Slots (sidebar widget) -->
+<script>
+  (async function loadVolSlots() {
+    const SLOTS_TOKEN = 'patkJpKueaHuqyzBZ.380b2d07e15f887b88f6cf4fdddd2f3ebd1896876548ed9c125cb4be44c0b991';
+    const SLOTS_BASE  = 'app6vDty1hbxKQw3H';
+    const SLOTS_TABLE = 'tbln2tMRl7NRKc2UP';
+    const container   = document.getElementById('vol-slots-rows');
+    try {
+      const params = new URLSearchParams({
+        'filterByFormula': '{Filled}=FALSE()',
+        'sort[0][field]':     'Date',
+        'sort[0][direction]': 'asc',
+        'sort[1][field]':     'Location',
+        'sort[1][direction]': 'asc',
+        'maxRecords': '6'
+      });
+      const res = await fetch(
+        `https://api.airtable.com/v0/${SLOTS_BASE}/${SLOTS_TABLE}?${params}`,
+        { headers: { 'Authorization': `Bearer ${SLOTS_TOKEN}` } }
+      );
+      if (!res.ok) throw new Error(`Airtable ${res.status}`);
+      const { records } = await res.json();
+
+      if (!records.length) {
+        container.innerHTML = '<p class="vol-slots-empty">✓ All slots filled — thank you!</p>';
+        return;
+      }
+
+      const fmtDate = d => {
+        const [y, m, day] = d.split('-');
+        return `${m}/${day}`;
+      };
+
+      container.innerHTML = records.map(({ fields: f }) => {
+        const urgent = !!f['Urgent'];
+        const date   = f['Date'] ? fmtDate(f['Date']) : '—';
+        const name   = f['Slot Name']    || f['Location'] || 'Open slot';
+        const loc    = f['Location']     || '';
+        const count  = f['Slots Needed'] ?? '?';
+        const showLoc = loc && loc !== name;
+        return `
+          <div class="vol-slot-row${urgent ? ' urgent' : ''}">
+            <span class="vs-date">${date}</span>
+            <span class="vs-name">${name}</span>
+            ${showLoc ? `<span class="vs-loc">${loc}</span>` : ''}
+            <span class="vs-count">${count}</span>
+          </div>`;
+      }).join('');
+    } catch (err) {
+      container.innerHTML = '<p class="vol-slots-loading">Could not load slots.</p>';
+      console.error('Vol slots fetch failed:', err);
+    }
+  })();
 </script>
 </body>
 </html>
